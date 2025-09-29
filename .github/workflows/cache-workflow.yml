@@ -11,16 +11,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Create folder for caching
+      - name: Create folder and file for caching
         run: |
-          mkdir -p test-cache
-          echo "Hello world" > test-cache/file.txt
+          mkdir -p .cache-test
+          echo "Hello world" > .cache-test/file.txt
 
-      - name: Cache folder
+      - name: prime-cache-241e4c2
         id: cache-step
         uses: actions/cache@v4
         with:
-          path: test-cache
+          path: .cache-test
           key: cache-241e4c2
 
       - name: Show cache hit/miss
