@@ -1,27 +1,52 @@
-name: Cache Test
+name: Cache Demo Workflow
 
 on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
-  build:
+  cache-demo:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Create folder and file for caching
-        run: |
-          mkdir -p .cache-test
-          echo "Hello world" > .cache-test/file.txt
-
-      - name: prime-cache-241e4c2
-        id: cache-step
-        uses: actions/cache@v4
-        with:
-          path: .cache-test
-          key: cache-241e4c2
-
-      - name: Show cache hit/miss
-        run: echo "Cache hit status: ${{ steps.cache-step.outputs.cache-hit }}"
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      id: cache
+      with:
+        path: |
+          ~/.cache
+          node_modules
+          vendor
+          .gradle
+          .m2
+        key: cache-241e4c2-${{ runner.os }}-${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/pom.xml', '**/build.gradle', '**/Gemfile.lock') }}
+        restore-keys: |
+          cache-241e4c2-${{ runner.os }}-
+          cache-241e4c2-
+    
+    - name: prime-cache-241e4c2
+      id: prime-cache
+      run: |
+        if steps.cache.outputs.cache-hit == 'true'; then
+          echo "Cache hit for key: cache-241e4c2"
+          echo "result=hit" >> $GITHUB_OUTPUT
+        else
+          echo "Cache miss for key: cache-241e4c2"
+          echo "result=miss" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Install dependencies (example)
+      run: |
+        echo "This step would install dependencies that get cached"
+        # Example commands that might create cacheable files:
+        # npm install
+        # bundle install
+        # ./gradlew dependencies
+        mkdir -p node_modules
+        echo "fake dependency" > node_modules/dep.txt
