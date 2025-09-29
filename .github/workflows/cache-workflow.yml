@@ -14,14 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Create cache folder
+        run: mkdir -p .cache-test
+
       - name: prime-cache-241e4c2
         id: prime-cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.npm
-            ~/.cache
+          path: .cache-test
           key: cache-241e4c2
 
       - name: Show cache hit/miss
         run: echo "Cache hit status: ${{ steps.prime-cache.outputs.cache-hit }}"
+
