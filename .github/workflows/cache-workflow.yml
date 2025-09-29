@@ -1,4 +1,4 @@
-name: Cache Dependencies
+name: Cache Test
 
 on:
   push:
@@ -14,16 +14,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Create cache folder
-        run: mkdir -p .cache-test
+      - name: Create a folder to cache
+        run: mkdir -p test-cache && echo "Hello" > test-cache/file.txt
 
       - name: prime-cache-241e4c2
         id: prime-cache
         uses: actions/cache@v4
         with:
-          path: .cache-test
+          path: test-cache
           key: cache-241e4c2
 
       - name: Show cache hit/miss
         run: echo "Cache hit status: ${{ steps.prime-cache.outputs.cache-hit }}"
-
