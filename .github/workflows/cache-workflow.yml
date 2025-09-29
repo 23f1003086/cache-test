@@ -1,9 +1,6 @@
 name: Cache Test
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -14,15 +11,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Create a folder to cache
-        run: mkdir -p test-cache && echo "Hello" > test-cache/file.txt
+      - name: Create folder for caching
+        run: |
+          mkdir -p test-cache
+          echo "Hello world" > test-cache/file.txt
 
-      - name: prime-cache-241e4c2
-        id: prime-cache
+      - name: Cache folder
+        id: cache-step
         uses: actions/cache@v4
         with:
           path: test-cache
           key: cache-241e4c2
 
       - name: Show cache hit/miss
-        run: echo "Cache hit status: ${{ steps.prime-cache.outputs.cache-hit }}"
+        run: echo "Cache hit status: ${{ steps.cache-step.outputs.cache-hit }}"
